@@ -209,58 +209,37 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
 
   Widget _buildItem(BuildContext context, int index) {
     final item = _items[index];
-    return Dismissible(
-      key: Key(item.text + index.toString()),
-      background: Container(color: Colors.transparent),
-      secondaryBackground: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade800,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.edit, color: Colors.white),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        title: Text(
+          item.text,
+          style: TextStyle(
+            decoration: item.done ? TextDecoration.lineThrough : null,
+            color: Colors.black,
+          ),
+        ),
+        leading: Checkbox(
+          value: item.done,
+          onChanged: (_) => _toggleDone(index),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.black),
               onPressed: () => _editItem(index),
             ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.red.shade400,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.white),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => _deleteItem(index),
             ),
-          ),
-        ],
-      ),
-      direction: DismissDirection.endToStart,
-      confirmDismiss: (direction) async => false,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade50,
-          border: Border.all(color: Colors.grey.shade400),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: ListTile(
-          title: Text(
-            item.text,
-            style: TextStyle(
-                decoration: item.done ? TextDecoration.lineThrough : null,
-                color: Colors.black),
-          ),
-          leading: Checkbox(
-            value: item.done,
-            onChanged: (_) => _toggleDone(index),
-          ),
+          ],
         ),
       ),
     );
@@ -272,6 +251,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
       body: SafeArea(
         child: Column(
           children: [
+            // Eingabefeld oben
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
@@ -281,14 +261,20 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Neuen Eintrag hinzufügen',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide:
+                              const BorderSide(color: Colors.black, width: 2),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 8),
                       ),
                       onSubmitted: _addItem,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.add),
                     color: Colors.black,
@@ -298,22 +284,27 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               ),
             ),
             const Divider(height: 1),
+            // Liste
             Expanded(
               child: ListView.builder(
                 itemCount: _items.length,
                 itemBuilder: _buildItem,
               ),
             ),
+            // Löschen-Button kleiner
             Container(
               padding: const EdgeInsets.all(8),
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade400,
-                  foregroundColor: Colors.white,
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 200,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade400,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: _clearAll,
+                  child: const Text('Gesamte Liste löschen'),
                 ),
-                onPressed: _clearAll,
-                child: const Text('Gesamte Liste löschen'),
               ),
             ),
           ],
